@@ -37,6 +37,10 @@ func (s *Server) Run(addr string) {
 	}
 }
 
+func (s *Server) Use(middleware ...middleware.Middleware) {
+	s.middlewares = append(s.middlewares, middleware...)
+}
+
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c := &types.Context{
 		Params:         make(map[string]any),
