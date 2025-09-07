@@ -33,6 +33,10 @@ func (c *Context) RenderTemplate(path string, v any) {
 	t.Execute(c.ResponseWriter, v)
 }
 
+func (c *Context) Redirect(url string) {
+	http.Redirect(c.ResponseWriter, c.Request, url, http.StatusMovedPermanently)
+}
+
 func (c *Context) renderJson(v any) {
 	c.ResponseWriter.WriteHeader(http.StatusOK)
 	c.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf-8")
