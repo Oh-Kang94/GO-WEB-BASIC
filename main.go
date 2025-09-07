@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"web-basic/src"
+	"web-basic/src/model"
 	types "web-basic/src/types"
 )
 
@@ -18,19 +19,19 @@ func main() {
 	})
 
 	s.HandleFunc("GET", "/users/:id", func(c *types.Context) {
-		if c.Params["id"] == "" {
+		ctx := (*src.Context)(c) // 순환참조 피하기 위해 여기서 형변환
+		if ctx.Params["id"] == "" {
 			panic("id Cannot Be Blank")
 		}
-		fmt.Fprintf(c.ResponseWriter, "User ID: %v\n", c.Params["id"])
+
+		u := model.User{Id: ctx.Params["id"].(string)}
+		ctx.RenderResponse(u)
 	})
 
 	s.HandleFunc("GET", "/users/:user_id/address/:address_id", func(c *types.Context) {
-		fmt.Fprintf(
-			c.ResponseWriter,
-			"Get User Id: %v\nGet Address: %v\n",
-			c.Params["user_id"],
-			c.Params["address_id"],
-		)
+		ctx := (*src.Context)(c) // 순환참조 피하기 위해 여기서 형변환
+		u := model.User{Id: ctx.Params["user_id"].(string), AddressId: ctx.Params["address_id"].(string)}
+		ctx.RenderResponse(u)
 	})
 
 	s.HandleFunc("POST", "/users/:user_id", func(c *types.Context) {
@@ -49,4 +50,12 @@ func main() {
 	CREATE for User: okh1994
 	❯ curl -d name=오강현 http://localhost:8000/users/okh1994
 	CREATE for User: okh1994
+*/
+
+/*
+	❯ curl http://127.0.0.1:8000/users/okh1994
+	{"Id":"okh1994","AddressId":"","Name":""}
+
+	❯ curl -H "Accept: application/xml" http://127.0.0.1:8000/users/okh1994
+	<User><Id>okh1994</Id><AddressId></AddressId><Name></Name></User>%
 */
