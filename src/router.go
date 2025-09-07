@@ -6,18 +6,18 @@ import (
 )
 
 type Router struct {
-	Handlers map[string]map[string]http.HandlerFunc // http.HandlerFunc Mapping
+	Handlers map[string]map[string]HandleFunc
 }
 
 type Handler interface {
 	ServeHttp(http.ResponseWriter, *http.Request)
 }
 
-func (r *Router) HandleFunc(method, pattern string, h http.HandlerFunc) {
+func (r *Router) HandleFunc(method, pattern string, h HandleFunc) {
 	m, ok := r.Handlers[method]
 	if !ok {
 		// 등록된 Map이 없으면 생성
-		m = make(map[string]http.HandlerFunc)
+		m = make(map[string]HandleFunc)
 		r.Handlers[method] = m
 
 	}
@@ -27,8 +27,16 @@ func (r *Router) HandleFunc(method, pattern string, h http.HandlerFunc) {
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	for pattern, handler := range r.Handlers[req.Method] {
-		if ok, _ := match(pattern, req.URL.Path); ok {
-			handler(w, req)
+		if ok, params := match(pattern, req.URL.Path); ok {
+			c := Context{
+				Params:         make(map[string]any),
+				ResponseWriter: w,
+				Request:        req,
+			}
+			for k, v := range params {
+				c.Params[k] = v
+			}
+			handler(&c)
 			return
 		}
 	}
