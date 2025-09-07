@@ -3,11 +3,15 @@ package src
 import (
 	"encoding/json"
 	"encoding/xml"
+	"html/template"
 	"net/http"
+	"path/filepath"
 	"web-basic/src/types"
 )
 
 type Context types.Context
+
+var templates = map[string]*template.Template{}
 
 func (c *Context) RenderResponse(v any) {
 	accept := c.Request.Header.Get("Accept")
@@ -17,6 +21,16 @@ func (c *Context) RenderResponse(v any) {
 	default:
 		c.renderJson(v)
 	}
+}
+
+func (c *Context) RenderTemplate(path string, v any) {
+	t, ok := templates[path]
+	if !ok {
+		t = template.Must(template.ParseFiles(filepath.Join(".", path)))
+		templates[path] = t
+	}
+
+	t.Execute(c.ResponseWriter, v)
 }
 
 func (c *Context) renderJson(v any) {

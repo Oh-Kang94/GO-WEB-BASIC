@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	"time"
 	"web-basic/src"
 	"web-basic/src/model"
 	types "web-basic/src/types"
@@ -38,8 +38,9 @@ func main() {
 		fmt.Fprintf(c.ResponseWriter, "CREATE for User: %v\n", c.Params["user_id"])
 	})
 
-	s.HandleFunc("GET", "/index.html", func(c *types.Context) {
-		http.NotFound(c.ResponseWriter, c.Request)
+	s.HandleFunc("GET", "/", func(c *types.Context) {
+		ctx := (*src.Context)(c) // 순환참조 피하기 위해 여기서 형변환
+		ctx.RenderTemplate("src/public/index.html", map[string]any{"time": time.Now()})
 	})
 
 	s.Run(":8000")
