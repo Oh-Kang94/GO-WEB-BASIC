@@ -3,11 +3,11 @@ package middleware
 import (
 	"log"
 	"net/http"
-	"web-basic/src"
+	"web-basic/src/types"
 )
 
-func RecoverHandler(next src.HandleFunc) src.HandleFunc {
-	return func(ctx *src.Context) {
+func RecoverHandler(next types.HandleFunc) types.HandleFunc {
+	return func(ctx *types.Context) {
 		defer func() {
 			if err := recover(); err != nil {
 				log.Printf("panic : %+v", err)

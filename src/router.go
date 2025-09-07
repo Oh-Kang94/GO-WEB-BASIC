@@ -3,21 +3,16 @@ package src
 import (
 	"net/http"
 	"strings"
+	"web-basic/src/types"
 )
 
-type Router struct {
-	Handlers map[string]map[string]HandleFunc
-}
+type Router types.Router
 
-type Handler interface {
-	ServeHttp(http.ResponseWriter, *http.Request)
-}
-
-func (r *Router) HandleFunc(method, pattern string, h HandleFunc) {
+func (r *Router) HandleFunc(method, pattern string, h types.HandleFunc) {
 	m, ok := r.Handlers[method]
 	if !ok {
 		// 등록된 Map이 없으면 생성
-		m = make(map[string]HandleFunc)
+		m = make(map[string]types.HandleFunc)
 		r.Handlers[method] = m
 
 	}
@@ -25,8 +20,8 @@ func (r *Router) HandleFunc(method, pattern string, h HandleFunc) {
 	m[pattern] = h
 }
 
-func (r *Router) Handler() HandleFunc {
-	return func(ctx *Context) {
+func (r *Router) Handler() types.HandleFunc {
+	return func(ctx *types.Context) {
 		for pattern, handler := range r.Handlers[ctx.Request.Method] {
 			if ok, params := match(pattern, ctx.Request.URL.Path); ok {
 				for k, v := range params {

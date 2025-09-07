@@ -1,5 +1,5 @@
 package middleware
 
-import "web-basic/src"
+import "web-basic/src/types"
 
-type Middleware func(next src.HandleFunc) src.HandleFunc
+type Middleware func(next types.HandleFunc) types.HandleFunc

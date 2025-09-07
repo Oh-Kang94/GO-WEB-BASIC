@@ -3,16 +3,17 @@ package src
 import (
 	"net/http"
 	"web-basic/src/middleware"
+	"web-basic/src/types"
 )
 
 type Server struct {
 	*Router
 	middlewares  []middleware.Middleware
-	startHandler HandleFunc
+	startHandler types.HandleFunc
 }
 
 func NewServer() *Server {
-	r := &Router{Handlers: make(map[string]map[string]HandleFunc)}
+	r := &Router{Handlers: make(map[string]map[string]types.HandleFunc)}
 	s := &Server{Router: r}
 	s.middlewares = []middleware.Middleware{
 		middleware.LogHandler,
@@ -37,7 +38,7 @@ func (s *Server) Run(addr string) {
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c := &Context{
+	c := &types.Context{
 		Params:         make(map[string]any),
 		ResponseWriter: w,
 		Request:        r,

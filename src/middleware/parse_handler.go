@@ -3,11 +3,11 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
-	"web-basic/src"
+	"web-basic/src/types"
 )
 
-func ParseFormHandler(next src.HandleFunc) src.HandleFunc {
-	return func(ctx *src.Context) {
+func ParseFormHandler(next types.HandleFunc) types.HandleFunc {
+	return func(ctx *types.Context) {
 		ctx.Request.ParseForm()
 		fmt.Println(ctx.Request.PostForm)
 		for k, v := range ctx.Request.PostForm {
@@ -19,8 +19,8 @@ func ParseFormHandler(next src.HandleFunc) src.HandleFunc {
 	}
 }
 
-func ParseJsonHandler(next src.HandleFunc) src.HandleFunc {
-	return func(ctx *src.Context) {
+func ParseJsonHandler(next types.HandleFunc) types.HandleFunc {
+	return func(ctx *types.Context) {
 		var m map[string]any
 		if json.NewDecoder(ctx.Request.Body).Decode(&m); len(m) > 0 {
 			for k, v := range m {

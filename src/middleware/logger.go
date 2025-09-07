@@ -3,11 +3,11 @@ package middleware
 import (
 	"log"
 	"time"
-	"web-basic/src"
+	"web-basic/src/types"
 )
 
-func LogHandler(next src.HandleFunc) src.HandleFunc {
-	return func(ctx *src.Context) {
+func LogHandler(next types.HandleFunc) types.HandleFunc {
+	return func(ctx *types.Context) {
 		t := time.Now()
 
 		next(ctx)

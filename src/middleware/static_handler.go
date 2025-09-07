@@ -4,17 +4,17 @@ import (
 	"net/http"
 	"path"
 	"strings"
-	"web-basic/src"
+	"web-basic/src/types"
 )
 
-func StaticHandler(next src.HandleFunc) src.HandleFunc {
+func StaticHandler(next types.HandleFunc) types.HandleFunc {
 	var (
-		// 정적 리소스 루트를 src/public 으로 고정
-		dir       = http.Dir("./src/public")
+		// 정적 리소스 루트를 types/public 으로 고정
+		dir       = http.Dir("./types/public")
 		indexFile = "index.html"
 	)
 
-	return func(ctx *src.Context) {
+	return func(ctx *types.Context) {
 		if ctx.Request.Method != "GET" && ctx.Request.Method != "HEAD" {
 			next(ctx)
 			return
