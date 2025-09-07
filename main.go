@@ -12,9 +12,13 @@ func main() {
 		Handlers: make(map[string]map[string]src.HandleFunc),
 	}
 
-	r.HandleFunc("GET", "/", mid.LogHandler(mid.RecoverHandler(func(c *src.Context) {
-		fmt.Fprintf(c.ResponseWriter, "Welcome!\n")
-	})))
+	r.HandleFunc("GET", "/",
+		mid.LogHandler(
+			mid.RecoverHandler(
+				func(c *src.Context) { fmt.Fprintf(c.ResponseWriter, "Welcome!\n") },
+			),
+		),
+	)
 
 	r.HandleFunc("GET", "/about", mid.LogHandler(mid.RecoverHandler(func(c *src.Context) {
 		fmt.Fprintf(c.ResponseWriter, "About Page!\n")
@@ -39,6 +43,10 @@ func main() {
 	r.HandleFunc("POST", "/users/:user_id", mid.LogHandler(mid.RecoverHandler(func(c *src.Context) {
 		fmt.Fprintf(c.ResponseWriter, "CREATE for User: %v\n", c.Params["user_id"])
 	})))
+
+	r.HandleFunc("GET", "/index.html", mid.StaticHandler(func(c *src.Context) {
+		http.NotFound(c.ResponseWriter, c.Request)
+	}))
 
 	http.ListenAndServe(":8000", r)
 }
