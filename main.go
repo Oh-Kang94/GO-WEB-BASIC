@@ -4,51 +4,43 @@ import (
 	"fmt"
 	"net/http"
 	"web-basic/src"
-	mid "web-basic/src/middleware"
 )
 
 func main() {
-	r := &src.Router{
-		Handlers: make(map[string]map[string]src.HandleFunc),
-	}
-
-	r.HandleFunc("GET", "/",
-		mid.LogHandler(
-			mid.RecoverHandler(
-				func(c *src.Context) { fmt.Fprintf(c.ResponseWriter, "Welcome!\n") },
-			),
-		),
+	s := src.NewServer()
+	s.HandleFunc("GET", "/",
+		func(c *src.Context) { fmt.Fprintf(c.ResponseWriter, "Welcome!\n") },
 	)
 
-	r.HandleFunc("GET", "/about", mid.LogHandler(mid.RecoverHandler(func(c *src.Context) {
+	s.HandleFunc("GET", "/about", func(c *src.Context) {
 		fmt.Fprintf(c.ResponseWriter, "About Page!\n")
-	})))
+	})
 
-	r.HandleFunc("GET", "/users/:id", mid.LogHandler(mid.RecoverHandler(func(c *src.Context) {
+	s.HandleFunc("GET", "/users/:id", func(c *src.Context) {
 		if c.Params["id"] == "" {
 			panic("id Cannot Be Blank")
 		}
 		fmt.Fprintf(c.ResponseWriter, "User ID: %v\n", c.Params["id"])
-	})))
+	})
 
-	r.HandleFunc("GET", "/users/:user_id/address/:address_id", mid.LogHandler(mid.RecoverHandler(func(c *src.Context) {
+	s.HandleFunc("GET", "/users/:user_id/address/:address_id", func(c *src.Context) {
 		fmt.Fprintf(
 			c.ResponseWriter,
 			"Get User Id: %v\nGet Address: %v\n",
 			c.Params["user_id"],
 			c.Params["address_id"],
 		)
-	})))
+	})
 
-	r.HandleFunc("POST", "/users/:user_id", mid.LogHandler(mid.RecoverHandler(func(c *src.Context) {
+	s.HandleFunc("POST", "/users/:user_id", func(c *src.Context) {
 		fmt.Fprintf(c.ResponseWriter, "CREATE for User: %v\n", c.Params["user_id"])
-	})))
+	})
 
-	r.HandleFunc("GET", "/index.html", mid.StaticHandler(func(c *src.Context) {
+	s.HandleFunc("GET", "/index.html", func(c *src.Context) {
 		http.NotFound(c.ResponseWriter, c.Request)
-	}))
+	})
 
-	http.ListenAndServe(":8000", r)
+	s.Run(":8000")
 }
 
 /*
